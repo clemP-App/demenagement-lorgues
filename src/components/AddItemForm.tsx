@@ -58,7 +58,6 @@ export function AddItemForm({ module, modules, defaultStatus, onClose, onCreated
         due_date: dueDate || null,
         responsible: responsible.trim() || null,
         notes: notes.trim() || null,
-        sort_order: -Date.now(),
         data: {},
       }
       if (targetModule === 'cartons') {

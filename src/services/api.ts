@@ -236,16 +236,20 @@ async function logActivity(
   newValue: Record<string, unknown> | null,
   authorName: string,
 ): Promise<void> {
-  const userId = await ensureAnonymousAuth()
-  await supabase.from('activity_log').insert({
-    workspace_id: workspaceId,
-    item_id: itemId,
-    action,
-    old_value: oldValue,
-    new_value: newValue,
-    author_id: userId,
-    author_name: authorName,
-  })
+  try {
+    const userId = await ensureAnonymousAuth()
+    await supabase.from('activity_log').insert({
+      workspace_id: workspaceId,
+      item_id: itemId,
+      action,
+      old_value: oldValue,
+      new_value: newValue,
+      author_id: userId,
+      author_name: authorName,
+    })
+  } catch {
+    // Ne pas bloquer l'action principale si le journal échoue
+  }
 }
 
 export async function updateSeedVersion(workspaceId: string, version: number): Promise<void> {
