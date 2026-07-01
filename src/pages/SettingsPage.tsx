@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { Copy, Download, Upload, RefreshCw, Database, Trash2, Check } from 'lucide-react'
 import { useApp } from '@/context/AppContext'
-import { getMissingSeedItems } from '@/data/seed'
+import { getMissingSeedItems, SEED_ITEMS } from '@/data/seed'
 import { CURRENT_SEED_VERSION } from '@/types'
 import { updateSeedVersion, resetWorkspaceData } from '@/services/api'
 import { downloadFile, exportToCsv } from '@/lib/utils'
@@ -18,6 +18,7 @@ export function SettingsPage() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [confirmReset, setConfirmReset] = useState(false)
+  const [confirmCleanReload, setConfirmCleanReload] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
   if (!workspace) return null
@@ -96,8 +97,26 @@ export function SettingsPage() {
       await resetWorkspaceData(workspace.id)
       clearWorkspaceCache(workspace.id)
       await syncItems()
-      setMessage('Données réinitialisées')
+      setMessage('Toutes les données ont été supprimées.')
       setConfirmReset(false)
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : 'Erreur')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleCleanReload = async () => {
+    if (!online) return
+    setLoading(true)
+    try {
+      await resetWorkspaceData(workspace.id)
+      clearWorkspaceCache(workspace.id)
+      await bulkAddItems(SEED_ITEMS)
+      await updateSeedVersion(workspace.id, CURRENT_SEED_VERSION)
+      await syncItems()
+      setMessage(`Base propre rechargée : ${SEED_ITEMS.length} éléments sans doublons.`)
+      setConfirmCleanReload(false)
     } catch (e) {
       setMessage(e instanceof Error ? e.message : 'Erreur')
     } finally {
@@ -160,25 +179,45 @@ export function SettingsPage() {
           <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={importJson} />
         </section>
 
-        <section className="rounded-2xl border border-red-200 bg-red-50 p-5">
+        <section className="rounded-2xl border border-red-200 bg-red-50 p-5 space-y-3">
           <h2 className="font-semibold text-red-800">Zone dangereuse</h2>
-          {!confirmReset ? (
-            <button onClick={() => setConfirmReset(true)} disabled={!online}
-              className="mt-3 flex w-full items-center gap-3 rounded-xl border border-red-300 bg-white p-4 text-red-700">
-              <Trash2 className="h-5 w-5" />
-              Réinitialiser toutes les données
+          <p className="text-sm text-red-700">
+            En cas de doublons ou de liste incohérente, repartez sur une base propre.
+          </p>
+          {!confirmCleanReload ? (
+            <button onClick={() => setConfirmCleanReload(true)} disabled={!online || loading}
+              className="flex w-full items-center gap-3 rounded-xl border border-orange-300 bg-white p-4 text-orange-800">
+              <Database className="h-5 w-5" />
+              Vider et recharger le modèle propre
             </button>
           ) : (
-            <div className="mt-3 space-y-2">
-              <p className="text-sm text-red-700">Cette action est irréversible. Confirmer ?</p>
+            <div className="space-y-2 rounded-xl border border-orange-300 bg-white p-4">
+              <p className="text-sm text-orange-800">
+                Supprime tout et recharge la liste unique (tâches, démarches, cartons…). Vos coches seront perdues.
+              </p>
+              <button onClick={handleCleanReload} disabled={loading}
+                className="w-full rounded-xl bg-orange-600 py-3 font-semibold text-white">
+                Confirmer le rechargement propre
+              </button>
+              <button onClick={() => setConfirmCleanReload(false)}
+                className="w-full rounded-xl border py-3 text-sm">Annuler</button>
+            </div>
+          )}
+          {!confirmReset ? (
+            <button onClick={() => setConfirmReset(true)} disabled={!online}
+              className="flex w-full items-center gap-3 rounded-xl border border-red-300 bg-white p-4 text-red-700">
+              <Trash2 className="h-5 w-5" />
+              Vider toutes les données (sans recharger)
+            </button>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-sm text-red-700">Supprimer tout sans recharger le modèle ?</p>
               <button onClick={handleReset} disabled={loading}
                 className="w-full rounded-xl bg-red-600 py-3 font-semibold text-white">
                 Oui, tout supprimer
               </button>
               <button onClick={() => setConfirmReset(false)}
-                className="w-full rounded-xl border py-3 text-sm">
-                Annuler
-              </button>
+                className="w-full rounded-xl border py-3 text-sm">Annuler</button>
             </div>
           )}
         </section>

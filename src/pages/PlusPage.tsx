@@ -1,26 +1,22 @@
 import { Link } from 'react-router-dom'
 import {
-  FileText, FolderOpen, Users, CheckSquare, Wallet, Activity, Settings, Search,
+  FolderOpen, Wallet, Activity, Settings, Search,
 } from 'lucide-react'
+import { PageShell } from '@/components/PageShell'
 
 const links = [
-  { to: '/demarches', icon: FileText, label: 'Démarches' },
   { to: '/documents', icon: FolderOpen, label: 'Documents' },
-  { to: '/contacts', icon: Users, label: 'Contacts' },
-  { to: '/verifications', icon: CheckSquare, label: 'Vérifications' },
   { to: '/budget', icon: Wallet, label: 'Budget' },
   { to: '/activite', icon: Activity, label: 'Activité' },
-  { to: '/recherche', icon: Search, label: 'Recherche globale' },
+  { to: '/recherche', icon: Search, label: 'Recherche' },
   { to: '/parametres', icon: Settings, label: 'Paramètres' },
 ]
-
-import { PageShell } from '@/components/PageShell'
 
 export function PlusPage() {
   return (
     <PageShell size="sm">
       <h1 className="text-2xl font-bold text-slate-800">Plus</h1>
-      <p className="mt-1 text-sm text-slate-500">Autres sections et outils</p>
+      <p className="mt-1 text-sm text-slate-500">Autres sections</p>
       <div className="mt-6 grid gap-3">
         {links.map(({ to, icon: Icon, label }) => (
           <Link

@@ -109,7 +109,7 @@ export async function createItem(
     .single()
   if (error) throw error
 
-  await logActivity(workspaceId, data.id, 'create', null, { title: input.title }, displayName)
+  await logActivity(workspaceId, data.id, 'create', null, { title: input.title, module: input.module }, displayName)
   return data as Item
 }
 
@@ -133,7 +133,14 @@ export async function updateItem(
   if (error) throw error
 
   if (updates.status) {
-    await logActivity(workspaceId, itemId, 'status_change', null, { status: updates.status }, displayName)
+    await logActivity(
+      workspaceId,
+      itemId,
+      'status_change',
+      null,
+      { status: updates.status, title: data.title, module: data.module },
+      displayName,
+    )
   }
   return data as Item
 }

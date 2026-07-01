@@ -15,11 +15,10 @@ const PERIOD_SHORT: Record<string, string> = {
 }
 
 const quickFilters = [
-  { key: 'pending', label: 'À faire', value: 'status:pending' },
-  { key: 'done', label: 'Terminées', value: 'status:done' },
   { key: 'urgent', label: 'Urgent', value: 'priority:haute' },
   { key: 'blocked', label: 'Bloqué', value: 'status:bloque' },
   { key: 'today', label: 'Bientôt', value: 'today' },
+  { key: 'verif', label: 'Vérifications', value: 'cat:Vérification' },
   ...PERIODS.map((p) => ({
     key: p,
     label: PERIOD_SHORT[p] ?? p,
@@ -28,8 +27,7 @@ const quickFilters = [
 ]
 
 function echeancierFilter(items: Item[], filter: string): Item[] {
-  if (filter === 'status:pending') return items.filter((i) => !isItemDone(i))
-  if (filter === 'status:done') return items.filter(isItemDone)
+  if (filter === 'cat:Vérification') return items.filter((i) => i.category === 'Vérification')
   if (filter === 'today') {
     const now = startOfDay(new Date())
     const week = addDays(now, 7)
@@ -71,8 +69,8 @@ export function EcheancierPage() {
   return (
     <ModulePage
       module="echeancier"
-      title="Échéancier"
-      subtitle="Toutes vos tâches — par période, calendrier ou pièce"
+      title="Tâches"
+      subtitle="Ce qu'il faut faire — les plus urgentes en haut"
       quickFilters={quickFilters}
       filterFn={echeancierFilter}
       groupBy={groupByPeriod}

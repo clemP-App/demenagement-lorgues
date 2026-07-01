@@ -81,6 +81,52 @@ export function sortItemsPendingFirst(items: Item[]): Item[] {
   })
 }
 
+const PERIOD_ORDER: Record<string, number> = {
+  'Avant 11 juillet': 0,
+  '11-17 juillet': 1,
+  '18-24 juillet': 2,
+  '25-28 juillet': 3,
+  '29 juillet': 4,
+  '30 juillet': 5,
+  'Après emménagement': 6,
+}
+
+function priorityRank(priority: string): number {
+  if (['haute', 'indispensable', 'p1'].includes(priority)) return 4
+  if (['important', 'moyenne', 'p2'].includes(priority)) return 3
+  if (['basse', 'confort', 'p3'].includes(priority)) return 2
+  return 1
+}
+
+/** Tri pour affichage : bloqués et urgents en premier, puis par période */
+export function sortItemsForDisplay(items: Item[]): Item[] {
+  return [...items].sort((a, b) => {
+    if (isItemBlocked(a) && !isItemBlocked(b)) return -1
+    if (!isItemBlocked(a) && isItemBlocked(b)) return 1
+    const pr = priorityRank(b.priority) - priorityRank(a.priority)
+    if (pr !== 0) return pr
+    const pa = PERIOD_ORDER[a.period ?? ''] ?? 99
+    const pb = PERIOD_ORDER[b.period ?? ''] ?? 99
+    if (pa !== pb) return pa - pb
+    return b.created_at.localeCompare(a.created_at)
+  })
+}
+
+export function getModulesStats(items: Item[], modules: ModuleType[]): ModuleStats {
+  const filtered = items.filter((i) => modules.includes(i.module))
+  const total = filtered.length
+  const done = filtered.filter(isItemDone).length
+  const urgent = filtered.filter((i) => !isItemDone(i) && isItemUrgent(i)).length
+  const blocked = filtered.filter(isItemBlocked).length
+  const percent = total > 0 ? Math.round((done / total) * 100) : 0
+  return { total, done, urgent, blocked, percent }
+}
+
+/** Stats tableau de bord : uniquement les tâches de l'échéancier */
+export function getDashboardTaskStats(items: Item[]): ModuleStats {
+  return getModuleStats(items, 'echeancier')
+}
+
 export function getModuleStats(items: Item[], module: ModuleType): ModuleStats {
   const filtered = items.filter((i) => i.module === module)
   const total = filtered.length
@@ -92,12 +138,7 @@ export function getModuleStats(items: Item[], module: ModuleType): ModuleStats {
 }
 
 export function getGlobalStats(items: Item[]) {
-  const total = items.length
-  const done = items.filter(isItemDone).length
-  const urgent = items.filter(isItemUrgent).length
-  const blocked = items.filter(isItemBlocked).length
-  const percent = total > 0 ? Math.round((done / total) * 100) : 0
-  return { total, done, urgent, blocked, percent }
+  return getDashboardTaskStats(items)
 }
 
 export function getDoNowItems(items: Item[]): Item[] {
@@ -128,10 +169,12 @@ export function getLastStretchItems(items: Item[]): Item[] {
   const periods = ['25-28 juillet', '29 juillet', '30 juillet']
   return items.filter((item) => {
     if (isItemDone(item)) return false
-    if (item.module === 'echeancier' && item.period && periods.includes(item.period)) return true
+    if (item.module === 'echeancier') {
+      if (item.category === 'Vérification') return true
+      if (item.period && periods.includes(item.period)) return true
+    }
     if (item.module === 'voitures' && item.data.indispensable) return true
     if (item.module === 'documents' && ['Appartement', 'Assurance'].includes(item.category ?? '')) return true
-    if (item.module === 'verifications') return true
     return false
   })
 }

@@ -4,12 +4,9 @@ import { Layout } from '@/components/Layout'
 import { WelcomeScreen } from '@/components/WelcomeScreen'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { EcheancierPage } from '@/pages/EcheancierPage'
-import { DemarchesPage } from '@/pages/DemarchesPage'
-import { CartonsPage } from '@/pages/CartonsPage'
+import { PreparationPage } from '@/pages/PreparationPage'
 import { VoituresPage } from '@/pages/VoituresPage'
 import { DocumentsPage } from '@/pages/DocumentsPage'
-import { ContactsPage } from '@/pages/ContactsPage'
-import { VerificationsPage } from '@/pages/VerificationsPage'
 import { BudgetPage } from '@/pages/BudgetPage'
 import { ActivityPage } from '@/pages/ActivityPage'
 import { SettingsPage } from '@/pages/SettingsPage'
@@ -36,17 +33,18 @@ export default function App() {
       <Routes>
         <Route path="/" element={<DashboardPage />} />
         <Route path="/echeancier" element={<EcheancierPage />} />
-        <Route path="/demarches" element={<DemarchesPage />} />
-        <Route path="/cartons" element={<CartonsPage />} />
+        <Route path="/preparation" element={<PreparationPage />} />
+        <Route path="/demarches" element={<Navigate to="/preparation" replace />} />
+        <Route path="/cartons" element={<Navigate to="/preparation" replace />} />
         <Route path="/voitures" element={<VoituresPage />} />
         <Route path="/documents" element={<DocumentsPage />} />
-        <Route path="/contacts" element={<ContactsPage />} />
-        <Route path="/verifications" element={<VerificationsPage />} />
         <Route path="/budget" element={<BudgetPage />} />
         <Route path="/activite" element={<ActivityPage />} />
         <Route path="/parametres" element={<SettingsPage />} />
         <Route path="/plus" element={<PlusPage />} />
         <Route path="/recherche" element={<SearchPage />} />
+        <Route path="/contacts" element={<Navigate to="/parametres" replace />} />
+        <Route path="/verifications" element={<Navigate to="/echeancier" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>

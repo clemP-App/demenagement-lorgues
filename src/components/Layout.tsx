@@ -1,8 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import {
-  Home, Calendar, FileText, Package, Car, FolderOpen,
-  Users, CheckSquare, Wallet, Activity, Settings, MoreHorizontal,
-  RefreshCw,
+  Home, Calendar, Package, Car, FolderOpen,
+  Wallet, Activity, Settings, MoreHorizontal, RefreshCw,
 } from 'lucide-react'
 import { useApp } from '@/context/AppContext'
 import { OfflineBanner } from '@/components/OfflineBanner'
@@ -10,13 +9,10 @@ import { InstallPrompt } from '@/components/InstallPrompt'
 
 const desktopNav = [
   { to: '/', icon: Home, label: 'Tableau de bord' },
-  { to: '/echeancier', icon: Calendar, label: 'Échéancier' },
-  { to: '/demarches', icon: FileText, label: 'Démarches' },
-  { to: '/cartons', icon: Package, label: 'Cartons' },
+  { to: '/echeancier', icon: Calendar, label: 'Tâches' },
+  { to: '/preparation', icon: Package, label: 'Préparation' },
   { to: '/voitures', icon: Car, label: 'Voitures' },
   { to: '/documents', icon: FolderOpen, label: 'Documents' },
-  { to: '/contacts', icon: Users, label: 'Contacts' },
-  { to: '/verifications', icon: CheckSquare, label: 'Vérifications' },
   { to: '/budget', icon: Wallet, label: 'Budget' },
   { to: '/activite', icon: Activity, label: 'Activité' },
   { to: '/parametres', icon: Settings, label: 'Paramètres' },
@@ -25,7 +21,7 @@ const desktopNav = [
 const mobileNav = [
   { to: '/', icon: Home, label: 'Accueil' },
   { to: '/echeancier', icon: Calendar, label: 'Tâches' },
-  { to: '/cartons', icon: Package, label: 'Cartons' },
+  { to: '/preparation', icon: Package, label: 'Prépa' },
   { to: '/voitures', icon: Car, label: 'Voitures' },
   { to: '/plus', icon: MoreHorizontal, label: 'Plus' },
 ]
@@ -36,7 +32,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      {/* Sidebar desktop */}
       <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
         <div className="border-b border-slate-100 p-5">
           <div className="flex items-center gap-3">
@@ -77,7 +72,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         )}
       </aside>
 
-      {/* Main content */}
       <div className="flex min-w-0 flex-1 flex-col pb-nav-safe lg:pb-0">
         <OfflineBanner online={online} />
         <main className="flex-1 overflow-x-hidden">{children}</main>
@@ -86,14 +80,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      {/* Mobile bottom nav */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 flex border-t border-slate-200 bg-white/95 backdrop-blur-md lg:hidden safe-bottom">
         {mobileNav.map(({ to, icon: Icon, label }) => (
           <Link
             key={to}
             to={to}
             className={`touch-target flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-xs active:scale-95 transition-transform ${
-              location.pathname === to ? 'text-brand-600' : 'text-slate-400'
+              location.pathname === to || (to === '/preparation' && (location.pathname === '/demarches' || location.pathname === '/cartons'))
+                ? 'text-brand-600'
+                : 'text-slate-400'
             }`}
           >
             <Icon className="h-6 w-6 shrink-0" />

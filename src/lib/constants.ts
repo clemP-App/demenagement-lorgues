@@ -13,12 +13,12 @@ export const MODULE_LABELS: Record<ModuleType, string> = {
 
 export const MODULE_PATHS: Record<ModuleType, string> = {
   echeancier: '/echeancier',
-  demarches: '/demarches',
-  cartons: '/cartons',
+  demarches: '/preparation',
+  cartons: '/preparation',
   voitures: '/voitures',
   documents: '/documents',
-  contacts: '/contacts',
-  verifications: '/verifications',
+  contacts: '/parametres',
+  verifications: '/echeancier',
   budget: '/budget',
 }
 
@@ -73,7 +73,7 @@ export const ECHEANCIER_CATEGORIES = [
   'Vente', 'Voitures', 'Notaire', 'Internet', 'Assurance', 'Nettoyage',
   'Chambre parents', 'Chambre Julie', 'Chambre Elie', 'Chambre Raph',
   'Salle de bain', 'Buanderie', 'Garage', 'Cave', 'Abri de jardin', 'Dressing',
-  'Salon-cuisine', 'Déménageur', 'Enfants',
+  'Salon-cuisine', 'Déménageur', 'Enfants', 'Vérification',
 ] as const
 
 export const DEMARCHES_CATEGORIES = [

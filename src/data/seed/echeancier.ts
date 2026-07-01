@@ -27,20 +27,14 @@ export const ECHEANCIER_SEED = [
   echeancier('Signer le compromis de vente', { category: 'Vente', priority: 'haute', period: P.avant, due_date: '2026-07-08' }),
   echeancier('Inventaire complet pièce par pièce (photo + liste)', { category: 'Cartons', priority: 'haute', period: P.avant }),
   echeancier('Commander / récupérer cartons, adhésif, papier bulle, marqueurs', { category: 'Cartons', period: P.avant }),
-  echeancier('Souscrire assurance habitation appartement', { category: 'Assurance', priority: 'haute', period: P.avant }),
-  echeancier('Ouvrir compteurs électricité appartement (ENGIE)', { category: 'Énergie', priority: 'haute', period: P.avant }),
-  echeancier('Ouvrir contrat eau appartement', { category: 'Eau', priority: 'haute', period: P.avant }),
   echeancier('Confirmer date et horaire déménageur', { category: 'Déménageur', priority: 'haute', period: P.avant }),
   echeancier('Planifier stationnement camion (maison + appartement)', { category: 'Déménageur', period: P.avant }),
   echeancier('Lister meubles à démonter / remonter', { category: 'Cartons', period: P.avant }),
   echeancier('Prévoir garde des enfants pour le 29 juillet', { category: 'Enfants', priority: 'haute', period: P.avant }),
   echeancier('Réserver créneau état des lieux appartement', { category: 'Logement', priority: 'haute', period: P.avant }),
 
-  // ——— 11-17 juillet : admin + début tri ———
-  echeancier('Lancer toutes les démarches administratives', { category: 'Administratif', priority: 'haute', period: P.s1 }),
-  echeancier('Programmer réexpédition courrier La Poste', { category: 'Administratif', period: P.s1 }),
-  echeancier('Changement d\'adresse Service-public', { category: 'Administratif', period: P.s1 }),
-  echeancier('Vérifier contrat internet appartement', { category: 'Internet', period: P.s1 }),
+  // ——— 11-17 juillet : début tri (démarches → onglet Prépa) ———
+  echeancier('Cocher les démarches urgentes dans Prépa', { category: 'Administratif', priority: 'haute', period: P.s1 }),
   echeancier('Inventorier et trier la cave (bouteilles + cartons)', { category: 'Cave', priority: 'haute', period: P.s1 }),
   echeancier('Lister bouteilles cave : garder / offrir / vendre', { category: 'Cave', period: P.s1 }),
   echeancier('Préparer cartons renforcés pour bouteilles cave', { category: 'Cave', period: P.s1 }),
@@ -48,11 +42,6 @@ export const ECHEANCIER_SEED = [
   echeancier('Trier garage (premier passage)', { category: 'Garage', period: P.s1 }),
   echeancier('Trier dressing couloir (vêtements hors saison)', { category: 'Dressing', period: P.s1 }),
   echeancier('Commencer tri salon-cuisine (non essentiel)', { category: 'Salon-cuisine', period: P.s1 }),
-  echeancier('Finaliser inscription école Julie', { category: 'École', priority: 'haute', period: P.s1 }),
-  echeancier('Finaliser inscription école Elie', { category: 'École', priority: 'haute', period: P.s1 }),
-  echeancier('Finaliser inscription école Raph', { category: 'École', priority: 'haute', period: P.s1 }),
-  echeancier('Finaliser inscriptions périscolaire / cantine', { category: 'École', period: P.s1 }),
-  echeancier('Prévenir employeurs du déménagement', { category: 'Administratif', period: P.s1 }),
 
   // ——— 18-24 juillet : cartonnage intensif par pièce ———
   ...roomTasks('Chambre parents', P.s2, [
@@ -130,8 +119,6 @@ export const ECHEANCIER_SEED = [
     'Cartonner mobilier jardin fragile',
     'Vider abri avant départ',
   ]),
-  echeancier('Vérifier transfert / résiliation internet maison', { category: 'Internet', period: P.s2 }),
-  echeancier('Résilier / transférer électricité maison', { category: 'Énergie', period: P.s2 }),
   echeancier('Organiser don / déchetterie / Leboncoin', { category: 'Cartons', period: P.s2 }),
   echeancier('Étiqueter tous les cartons (pièce + priorité)', { category: 'Cartons', priority: 'haute', period: P.s2 }),
 
@@ -176,4 +163,21 @@ export const ECHEANCIER_SEED = [
   echeancier('Suivi vente définitive chez le notaire', { category: 'Vente', period: P.apres }),
   echeancier('Mettre à jour adresse restante (sites oubliés)', { category: 'Administratif', period: P.apres }),
   echeancier('Ranger cave appartement / stockage bouteilles', { category: 'Cave', period: P.apres }),
+
+  // ——— Vérifications anti-oubli (28-30 juillet) ———
+  echeancier('✓ Cartons P1 identifiés et étiquetés', { category: 'Vérification', priority: 'haute', period: P.s3, due_date: '2026-07-28' }),
+  echeancier('✓ Documents dans voiture 1', { category: 'Vérification', priority: 'haute', period: P.s3, due_date: '2026-07-28' }),
+  echeancier('✓ Médicaments hors cartons', { category: 'Vérification', period: P.s3, due_date: '2026-07-28' }),
+  echeancier('✓ Chargeurs hors cartons', { category: 'Vérification', period: P.s3, due_date: '2026-07-28' }),
+  echeancier('✓ Draps / oreillers prêts voiture 2', { category: 'Vérification', period: P.s3, due_date: '2026-07-28' }),
+  echeancier('✓ Frigo et congélateur vidés', { category: 'Vérification', priority: 'haute', period: P.s3, due_date: '2026-07-28' }),
+  echeancier('✓ Heure déménageur confirmée', { category: 'Vérification', priority: 'haute', period: P.s3, due_date: '2026-07-28' }),
+  echeancier('✓ Dernier tour garage, cave, abri', { category: 'Vérification', priority: 'haute', period: P.j29, due_date: '2026-07-29' }),
+  echeancier('✓ Dernier tour chambres enfants', { category: 'Vérification', period: P.j29, due_date: '2026-07-29' }),
+  echeancier('✓ Voitures 1 et 2 chargées', { category: 'Vérification', priority: 'haute', period: P.j29, due_date: '2026-07-29' }),
+  echeancier('✓ Maison fermée, volets, poubelles', { category: 'Vérification', priority: 'haute', period: P.j29, due_date: '2026-07-29' }),
+  echeancier('✓ Bail et assurance à l\'état des lieux', { category: 'Vérification', priority: 'haute', period: P.j30, due_date: '2026-07-30' }),
+  echeancier('✓ Photos état des lieux complètes', { category: 'Vérification', priority: 'haute', period: P.j30, due_date: '2026-07-30' }),
+  echeancier('✓ Compteurs relevés appartement', { category: 'Vérification', priority: 'haute', period: P.j30, due_date: '2026-07-30' }),
+  echeancier('✓ Clés et badges récupérés', { category: 'Vérification', priority: 'haute', period: P.j30, due_date: '2026-07-30' }),
 ]

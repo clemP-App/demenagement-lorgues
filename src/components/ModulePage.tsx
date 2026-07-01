@@ -4,16 +4,26 @@ import type { Item, ModuleType } from '@/types'
 import { useApp } from '@/context/AppContext'
 import { ItemCard } from '@/components/ItemCard'
 import { ItemDetailModal } from '@/components/ItemDetailModal'
+import { AddItemForm } from '@/components/AddItemForm'
 import { SearchBar, FilterChips } from '@/components/SearchBar'
 import { ProgressBar } from '@/components/ProgressBar'
+import { StatusTabs } from '@/components/StatusTabs'
 import { ViewToggle, type ListViewMode } from '@/components/ViewToggle'
 import { TaskCalendar } from '@/components/TaskCalendar'
-import { filterItems, getModuleStats, sortItemsPendingFirst, getToggledDoneStatus } from '@/lib/utils'
+import {
+  filterItems,
+  getModuleStats,
+  getModulesStats,
+  sortItemsForDisplay,
+  getToggledDoneStatus,
+  isItemDone,
+} from '@/lib/utils'
 import { PageShell } from '@/components/PageShell'
 import { PERIOD_COLORS } from '@/lib/constants'
 
 interface ModulePageProps {
-  module: ModuleType
+  module?: ModuleType
+  modules?: ModuleType[]
   title: string
   subtitle?: string
   quickFilters?: { key: string; label: string; value: string }[]
@@ -24,10 +34,12 @@ interface ModulePageProps {
   onAdd?: () => void
   children?: React.ReactNode
   showViewToggle?: boolean
+  showModuleOnCard?: boolean
 }
 
 export function ModulePage({
   module,
+  modules,
   title,
   subtitle,
   quickFilters = [],
@@ -38,20 +50,41 @@ export function ModulePage({
   onAdd,
   children,
   showViewToggle = false,
+  showModuleOnCard = false,
 }: ModulePageProps) {
+  const effectiveModules = modules ?? (module ? [module] : [])
+  const primaryModule = module ?? effectiveModules[0]
+
   const { items, itemsLoading, updateItem, online } = useApp()
   const [search, setSearch] = useState('')
   const [activeFilter, setActiveFilter] = useState('')
+  const [statusTab, setStatusTab] = useState<'pending' | 'done'>('pending')
   const [listViewMode, setListViewMode] = useState<ListViewMode>('period')
   const [selectedItem, setSelectedItem] = useState<Item | null>(null)
   const [showAdd, setShowAdd] = useState(false)
+  const [justAddedId, setJustAddedId] = useState<string | null>(null)
+
+  const scopeItems = useMemo(
+    () => items.filter((i) => effectiveModules.includes(i.module)),
+    [items, effectiveModules],
+  )
+
+  const pendingCount = scopeItems.filter((i) => !isItemDone(i)).length
+  const doneCount = scopeItems.filter(isItemDone).length
 
   const moduleItems = useMemo(() => {
-    let result = items.filter((i) => i.module === module)
+    let result = [...scopeItems]
+    result = result.filter((i) =>
+      statusTab === 'done' ? isItemDone(i) : !isItemDone(i),
+    )
     result = filterItems(result, { search })
     if (activeFilter && filterFn) result = filterFn(result, activeFilter)
     else if (activeFilter) {
-      if (activeFilter.startsWith('status:')) {
+      if (activeFilter === 'module:demarches') {
+        result = result.filter((i) => i.module === 'demarches')
+      } else if (activeFilter === 'module:cartons') {
+        result = result.filter((i) => i.module === 'cartons')
+      } else if (activeFilter.startsWith('status:')) {
         result = result.filter((i) => i.status === activeFilter.replace('status:', ''))
       } else if (activeFilter.startsWith('priority:')) {
         result = result.filter((i) => i.priority === activeFilter.replace('priority:', ''))
@@ -66,10 +99,13 @@ export function ModulePage({
         )
       }
     }
-    return result
-  }, [items, module, search, activeFilter, filterFn])
+    return sortItemsForDisplay(result)
+  }, [scopeItems, statusTab, search, activeFilter, filterFn])
 
-  const stats = getModuleStats(items, module)
+  const stats =
+    effectiveModules.length === 1
+      ? getModuleStats(items, effectiveModules[0])
+      : getModulesStats(items, effectiveModules)
 
   const activeGroupBy =
     listViewMode === 'category' && groupByCategory
@@ -79,17 +115,29 @@ export function ModulePage({
         : null
 
   const groups = activeGroupBy
-    ? activeGroupBy(moduleItems).map((g) => ({ ...g, items: sortItemsPendingFirst(g.items) }))
-    : [{ label: '', items: sortItemsPendingFirst(moduleItems) }]
+    ? activeGroupBy(moduleItems).map((g) => ({
+        ...g,
+        items: sortItemsForDisplay(g.items),
+      }))
+    : [{ label: '', items: moduleItems }]
 
   const handleQuickToggle = async (item: Item) => {
     if (!online) return
     await updateItem(item.id, { status: getToggledDoneStatus(item) })
   }
 
+  const handleItemCreated = (item: Item) => {
+    setStatusTab('pending')
+    setSearch('')
+    setActiveFilter('')
+    setJustAddedId(item.id)
+    setSelectedItem(item)
+    setTimeout(() => setJustAddedId(null), 3000)
+  }
+
   return (
     <PageShell size="lg">
-      <div className="mb-6 flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="mb-5 flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
           <h1 className="text-xl font-bold text-slate-800 sm:text-2xl">{title}</h1>
           {subtitle && <p className="mt-1 break-words text-sm text-slate-500">{subtitle}</p>}
@@ -108,43 +156,60 @@ export function ModulePage({
           className="flex shrink-0 touch-target items-center gap-2 rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 disabled:opacity-50 sm:py-2.5"
         >
           <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">Ajouter</span>
+          Ajouter
         </button>
       </div>
 
       {children}
 
       <div className="mb-4 min-w-0 space-y-3">
-        <SearchBar value={search} onChange={setSearch} />
-        {showViewToggle && (
+        <StatusTabs
+          pending={pendingCount}
+          done={doneCount}
+          value={statusTab}
+          onChange={setStatusTab}
+        />
+        <SearchBar value={search} onChange={setSearch} placeholder="Rechercher…" />
+        {showViewToggle && statusTab === 'pending' && (
           <ViewToggle value={listViewMode} onChange={setListViewMode} />
         )}
         {quickFilters.length > 0 && (
           <div className="min-w-0">
-            <FilterChips filters={[{ key: 'all', label: 'Toutes', value: '' }, ...quickFilters]}
-              active={activeFilter} onChange={setActiveFilter} />
+            <FilterChips
+              filters={[{ key: 'all', label: 'Toutes', value: '' }, ...quickFilters]}
+              active={activeFilter}
+              onChange={setActiveFilter}
+            />
           </div>
         )}
       </div>
+
+      {statusTab === 'pending' && pendingCount > 0 && (
+        <p className="mb-3 text-xs font-medium text-slate-500">
+          ↑ Les plus urgentes en premier — cochez au fur et à mesure
+        </p>
+      )}
 
       {itemsLoading ? (
         <div className="flex justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
         </div>
       ) : moduleItems.length === 0 ? (
-        <p className="py-12 text-center text-slate-400">Aucun élément trouvé</p>
-      ) : listViewMode === 'calendar' && showViewToggle ? (
+        <p className="py-12 text-center text-slate-400">
+          {statusTab === 'done' ? 'Aucun élément terminé' : 'Aucun élément à faire'}
+        </p>
+      ) : listViewMode === 'calendar' && showViewToggle && statusTab === 'pending' ? (
         <TaskCalendar
           items={moduleItems}
           onItemClick={setSelectedItem}
           onQuickToggle={handleQuickToggle}
         />
       ) : (
-        <div className="min-w-0 space-y-6">
+        <div className="min-w-0 space-y-5">
           {groups.map((group) => (
             <div key={group.label || 'all'} className="min-w-0">
               {group.label && (
-                <div className="mb-3 flex items-center gap-2">
+                <div className="mb-2 flex items-center gap-2">
                   {PERIOD_COLORS[group.label] && (
                     <span className={`h-2.5 w-2.5 rounded-full ${PERIOD_COLORS[group.label].dot}`} />
                   )}
@@ -154,15 +219,20 @@ export function ModulePage({
                   </h2>
                 </div>
               )}
-              <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-2">
                 {group.items.map((item) => (
-                  <ItemCard
+                  <div
                     key={item.id}
-                    item={item}
-                    onClick={() => setSelectedItem(item)}
-                    onQuickToggle={() => handleQuickToggle(item)}
-                    onQuickComment={() => setSelectedItem(item)}
-                  />
+                    className={justAddedId === item.id ? 'animate-pulse rounded-2xl ring-2 ring-brand-400' : ''}
+                  >
+                    <ItemCard
+                      item={item}
+                      showModule={showModuleOnCard}
+                      onClick={() => setSelectedItem(item)}
+                      onQuickToggle={() => handleQuickToggle(item)}
+                      onQuickComment={() => setSelectedItem(item)}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
@@ -171,10 +241,12 @@ export function ModulePage({
       )}
 
       {showAdd && (
-        <AddItemModal
-          module={module}
+        <AddItemForm
+          module={primaryModule}
+          modules={modules}
           defaultStatus={defaultStatus}
           onClose={() => setShowAdd(false)}
+          onCreated={handleItemCreated}
         />
       )}
 
@@ -185,56 +257,3 @@ export function ModulePage({
     </PageShell>
   )
 }
-
-function AddItemModal({
-  module,
-  defaultStatus,
-  onClose,
-}: {
-  module: ModuleType
-  defaultStatus: string
-  onClose: () => void
-}) {
-  const { addItem, online } = useApp()
-  const [title, setTitle] = useState('')
-  const [loading, setLoading] = useState(false)
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!title.trim() || !online) return
-    setLoading(true)
-    try {
-      await addItem({ module, title: title.trim(), status: defaultStatus })
-      onClose()
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <form onSubmit={handleSubmit} className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-        <h2 className="mb-4 text-lg font-bold">Ajouter un élément</h2>
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Titre…"
-          className="mb-4 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm"
-          autoFocus
-        />
-        <div className="flex gap-2">
-          <button type="button" onClick={onClose}
-            className="flex-1 rounded-xl border border-slate-200 py-3 text-sm font-medium">
-            Annuler
-          </button>
-          <button type="submit" disabled={loading || !online}
-            className="flex-1 rounded-xl bg-brand-600 py-3 text-sm font-semibold text-white disabled:opacity-50">
-            Ajouter
-          </button>
-        </div>
-      </form>
-    </div>
-  )
-}
-
-export { AddItemModal }
