@@ -169,4 +169,4 @@ export interface ModuleStats {
 export const MOVE_DATE = new Date('2026-07-29')
 export const INSPECTION_DATE = new Date('2026-07-30')
 export const LAST_STRETCH_DATE = new Date('2026-07-25')
-export const CURRENT_SEED_VERSION = 1
+export const CURRENT_SEED_VERSION = 2

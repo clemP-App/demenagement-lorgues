@@ -6,9 +6,11 @@ import { ItemCard } from '@/components/ItemCard'
 import { ItemDetailModal } from '@/components/ItemDetailModal'
 import { SearchBar, FilterChips } from '@/components/SearchBar'
 import { ProgressBar } from '@/components/ProgressBar'
-import { filterItems, getModuleStats, sortItemsPendingFirst } from '@/lib/utils'
+import { ViewToggle, type ListViewMode } from '@/components/ViewToggle'
+import { TaskCalendar } from '@/components/TaskCalendar'
+import { filterItems, getModuleStats, sortItemsPendingFirst, getToggledDoneStatus } from '@/lib/utils'
 import { PageShell } from '@/components/PageShell'
-import { MODULE_DONE_STATUS } from '@/lib/constants'
+import { PERIOD_COLORS } from '@/lib/constants'
 
 interface ModulePageProps {
   module: ModuleType
@@ -17,9 +19,11 @@ interface ModulePageProps {
   quickFilters?: { key: string; label: string; value: string }[]
   filterFn?: (items: Item[], filter: string) => Item[]
   groupBy?: (items: Item[]) => { label: string; items: Item[] }[]
+  groupByCategory?: (items: Item[]) => { label: string; items: Item[] }[]
   defaultStatus?: string
   onAdd?: () => void
   children?: React.ReactNode
+  showViewToggle?: boolean
 }
 
 export function ModulePage({
@@ -29,13 +33,16 @@ export function ModulePage({
   quickFilters = [],
   filterFn,
   groupBy,
+  groupByCategory,
   defaultStatus = 'a_faire',
   onAdd,
   children,
+  showViewToggle = false,
 }: ModulePageProps) {
   const { items, itemsLoading, updateItem, online } = useApp()
   const [search, setSearch] = useState('')
   const [activeFilter, setActiveFilter] = useState('')
+  const [listViewMode, setListViewMode] = useState<ListViewMode>('period')
   const [selectedItem, setSelectedItem] = useState<Item | null>(null)
   const [showAdd, setShowAdd] = useState(false)
 
@@ -63,14 +70,21 @@ export function ModulePage({
   }, [items, module, search, activeFilter, filterFn])
 
   const stats = getModuleStats(items, module)
-  const doneStatus = MODULE_DONE_STATUS[module]?.[0] ?? 'fait'
-  const groups = groupBy
-    ? groupBy(moduleItems).map((g) => ({ ...g, items: sortItemsPendingFirst(g.items) }))
+
+  const activeGroupBy =
+    listViewMode === 'category' && groupByCategory
+      ? groupByCategory
+      : listViewMode === 'period' && groupBy
+        ? groupBy
+        : null
+
+  const groups = activeGroupBy
+    ? activeGroupBy(moduleItems).map((g) => ({ ...g, items: sortItemsPendingFirst(g.items) }))
     : [{ label: '', items: sortItemsPendingFirst(moduleItems) }]
 
-  const handleQuickDone = async (item: Item) => {
+  const handleQuickToggle = async (item: Item) => {
     if (!online) return
-    await updateItem(item.id, { status: doneStatus })
+    await updateItem(item.id, { status: getToggledDoneStatus(item) })
   }
 
   return (
@@ -102,6 +116,9 @@ export function ModulePage({
 
       <div className="mb-4 min-w-0 space-y-3">
         <SearchBar value={search} onChange={setSearch} />
+        {showViewToggle && (
+          <ViewToggle value={listViewMode} onChange={setListViewMode} />
+        )}
         {quickFilters.length > 0 && (
           <div className="min-w-0">
             <FilterChips filters={[{ key: 'all', label: 'Toutes', value: '' }, ...quickFilters]}
@@ -116,22 +133,34 @@ export function ModulePage({
         </div>
       ) : moduleItems.length === 0 ? (
         <p className="py-12 text-center text-slate-400">Aucun élément trouvé</p>
+      ) : listViewMode === 'calendar' && showViewToggle ? (
+        <TaskCalendar
+          items={moduleItems}
+          onItemClick={setSelectedItem}
+          onQuickToggle={handleQuickToggle}
+        />
       ) : (
         <div className="min-w-0 space-y-6">
           {groups.map((group) => (
             <div key={group.label || 'all'} className="min-w-0">
               {group.label && (
-                <h2 className="mb-3 break-words text-sm font-semibold uppercase tracking-wide text-slate-400">
-                  {group.label} ({group.items.length})
-                </h2>
+                <div className="mb-3 flex items-center gap-2">
+                  {PERIOD_COLORS[group.label] && (
+                    <span className={`h-2.5 w-2.5 rounded-full ${PERIOD_COLORS[group.label].dot}`} />
+                  )}
+                  <h2 className="break-words text-sm font-bold text-slate-700">
+                    {group.label}
+                    <span className="ml-1.5 font-normal text-slate-400">({group.items.length})</span>
+                  </h2>
+                </div>
               )}
-              <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
                 {group.items.map((item) => (
                   <ItemCard
                     key={item.id}
                     item={item}
                     onClick={() => setSelectedItem(item)}
-                    onQuickDone={() => handleQuickDone(item)}
+                    onQuickToggle={() => handleQuickToggle(item)}
                     onQuickComment={() => setSelectedItem(item)}
                   />
                 ))}

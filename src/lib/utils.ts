@@ -1,10 +1,12 @@
-import { differenceInDays, isBefore, parseISO, startOfDay, isToday } from 'date-fns'
+import { differenceInDays, isBefore, parseISO, startOfDay, isToday, format } from 'date-fns'
 import type { Item, ModuleType, ModuleStats } from '@/types'
 import { MOVE_DATE, LAST_STRETCH_DATE } from '@/types'
 import {
   DONE_STATUSES,
   URGENT_PRIORITIES,
   MODULE_DONE_STATUS,
+  getDefaultStatuses,
+  PERIOD_ANCHOR_DATE,
 } from '@/lib/constants'
 
 export function daysUntilMove(from = new Date()): number {
@@ -19,6 +21,35 @@ export function isItemDone(item: Item): boolean {
   const moduleDone = MODULE_DONE_STATUS[item.module]
   if (moduleDone) return moduleDone.includes(item.status)
   return DONE_STATUSES.has(item.status)
+}
+
+export function getModulePendingStatus(module: ModuleType): string {
+  const doneList = MODULE_DONE_STATUS[module]
+  const statuses = getDefaultStatuses(module)
+  if (doneList?.length) {
+    const pending = statuses.find((s) => !doneList.includes(s))
+    if (pending) return pending
+  }
+  return 'a_faire'
+}
+
+export function getToggledDoneStatus(item: Item): string {
+  if (isItemDone(item)) return getModulePendingStatus(item.module)
+  return MODULE_DONE_STATUS[item.module]?.[0] ?? 'fait'
+}
+
+/** Date affichée dans le calendrier (due_date ou ancre de période) */
+export function getItemCalendarDate(item: Item): Date | null {
+  if (item.due_date) return parseISO(item.due_date)
+  if (item.period && PERIOD_ANCHOR_DATE[item.period]) {
+    return parseISO(PERIOD_ANCHOR_DATE[item.period])
+  }
+  return null
+}
+
+export function getItemCalendarDateKey(item: Item): string | null {
+  const d = getItemCalendarDate(item)
+  return d ? format(d, 'yyyy-MM-dd') : null
 }
 
 export function isItemUrgent(item: Item): boolean {

@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { Copy, Download, Upload, RefreshCw, Database, Trash2, Check } from 'lucide-react'
 import { useApp } from '@/context/AppContext'
-import { SEED_ITEMS } from '@/data/seed'
+import { getMissingSeedItems } from '@/data/seed'
 import { CURRENT_SEED_VERSION } from '@/types'
 import { updateSeedVersion, resetWorkspaceData } from '@/services/api'
 import { downloadFile, exportToCsv } from '@/lib/utils'
@@ -30,16 +30,22 @@ export function SettingsPage() {
 
   const loadSeed = async () => {
     if (!online) { setMessage('Impossible hors ligne'); return }
-    if (workspace.seed_version >= CURRENT_SEED_VERSION) {
-      setMessage('Le modèle complet est déjà chargé.')
+    const missing = getMissingSeedItems(items)
+    if (missing.length === 0 && workspace.seed_version >= CURRENT_SEED_VERSION) {
+      setMessage('Le modèle complet est déjà chargé — aucun élément manquant.')
       return
     }
     setLoading(true)
     try {
-      await bulkAddItems(SEED_ITEMS)
-      await updateSeedVersion(workspace.id, CURRENT_SEED_VERSION)
-      await syncItems()
-      setMessage('Modèle complet chargé avec succès !')
+      if (missing.length > 0) {
+        await bulkAddItems(missing)
+        await updateSeedVersion(workspace.id, CURRENT_SEED_VERSION)
+        await syncItems()
+        setMessage(`${missing.length} nouvel${missing.length > 1 ? 's' : ''} élément${missing.length > 1 ? 's' : ''} ajouté${missing.length > 1 ? 's' : ''} au modèle complet !`)
+      } else {
+        await updateSeedVersion(workspace.id, CURRENT_SEED_VERSION)
+        setMessage('Modèle à jour.')
+      }
     } catch (e) {
       setMessage(e instanceof Error ? e.message : 'Erreur')
     } finally {
@@ -145,7 +151,7 @@ export function SettingsPage() {
         <section className="rounded-2xl border border-slate-200 bg-white p-5 space-y-3">
           <h2 className="font-semibold text-slate-800">Données</h2>
           <SettingButton icon={RefreshCw} label="Recharger les données" onClick={() => syncItems()} disabled={!online} />
-          <SettingButton icon={Database} label="Charger le modèle complet du déménagement" onClick={loadSeed} disabled={!online || loading} />
+          <SettingButton icon={Database} label="Compléter le modèle (nouvelles tâches)" onClick={loadSeed} disabled={!online || loading} />
           <SettingButton icon={Download} label="Exporter JSON complet" onClick={exportJson} />
           <SettingButton icon={Download} label="Exporter CSV des tâches" onClick={exportTasksCsv} />
           <SettingButton icon={Download} label="Exporter CSV des cartons" onClick={exportCartonsCsv} />

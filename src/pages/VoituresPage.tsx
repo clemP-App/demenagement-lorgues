@@ -7,7 +7,7 @@ import { PriorityBadge } from '@/components/Badge'
 import { ItemDetailModal } from '@/components/ItemDetailModal'
 import { VOITURES } from '@/lib/constants'
 import { PageShell } from '@/components/PageShell'
-import { isItemDone } from '@/lib/utils'
+import { isItemDone, getToggledDoneStatus } from '@/lib/utils'
 
 export function VoituresPage() {
   const { items, updateItem, online } = useApp()
@@ -52,7 +52,7 @@ export function VoituresPage() {
                 return (
                 <div
                   key={item.id}
-                  className={`flex min-w-0 items-center gap-3 rounded-xl border p-3 ${
+                  className={`flex min-w-0 items-center gap-2 rounded-lg border p-2 ${
                     itemDone
                       ? 'border-green-200 bg-green-50/70'
                       : item.data.indispensable && item.status !== 'dans_voiture'
@@ -61,15 +61,15 @@ export function VoituresPage() {
                   }`}
                 >
                   <button
-                    onClick={() => online && updateItem(item.id, { status: 'dans_voiture' })}
-                    disabled={!online || item.status === 'dans_voiture'}
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-                      item.status === 'dans_voiture'
-                        ? 'bg-green-500 text-white'
-                        : 'bg-slate-100 text-slate-400 hover:bg-green-100 hover:text-green-600'
+                    onClick={() => online && updateItem(item.id, { status: getToggledDoneStatus(item) })}
+                    disabled={!online}
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
+                      itemDone
+                        ? 'bg-green-500 text-white hover:bg-green-600'
+                        : 'border border-slate-200 bg-slate-50 text-slate-300 hover:border-green-300 hover:bg-green-50 hover:text-green-600'
                     }`}
                   >
-                    <Check className="h-4 w-4" />
+                    {itemDone && <Check className="h-3.5 w-3.5" strokeWidth={3} />}
                   </button>
                   <button onClick={() => setSelected(item)} className="min-w-0 flex-1 text-left">
                     <p className={`break-words font-medium ${itemDone ? 'text-slate-500 line-through' : 'text-slate-800'}`}>

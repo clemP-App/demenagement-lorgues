@@ -9,7 +9,7 @@ import { ItemCard } from '@/components/ItemCard'
 import { ItemDetailModal } from '@/components/ItemDetailModal'
 import { AlertBanner } from '@/components/OfflineBanner'
 import { daysUntilMove, getGlobalStats, getDoNowItems, getLastStretchItems,
-  getModuleStats, isLastStretchMode,
+  getModuleStats, isLastStretchMode, getToggledDoneStatus,
 } from '@/lib/utils'
 import { MODULE_PATHS } from '@/lib/constants'
 import type { ModuleType } from '@/types'
@@ -146,20 +146,15 @@ export function DashboardPage() {
           Bien joué, rien d'urgent pour le moment !
         </p>
       ) : (
-        <div className="mb-8 grid grid-cols-1 gap-3 lg:grid-cols-2">
+        <div className="mb-8 grid grid-cols-1 gap-2 lg:grid-cols-2">
           {doNow.map((item) => (
             <ItemCard
               key={item.id}
               item={item}
               showModule
               onClick={() => setSelectedItem(item)}
-              onQuickDone={online ? async () => {
-                const doneMap: Record<string, string> = {
-                  echeancier: 'fait', demarches: 'fait', cartons: 'ferme',
-                  voitures: 'dans_voiture', documents: 'recu', contacts: 'ok',
-                  verifications: 'ok', budget: 'fait',
-                }
-                await updateItem(item.id, { status: doneMap[item.module] ?? 'fait' })
+              onQuickToggle={online ? async () => {
+                await updateItem(item.id, { status: getToggledDoneStatus(item) })
               } : undefined}
             />
           ))}

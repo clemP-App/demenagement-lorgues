@@ -1,5 +1,5 @@
 import { ModulePage } from '@/components/ModulePage'
-import { PERIODS } from '@/lib/constants'
+import { PERIODS, ECHEANCIER_CATEGORIES } from '@/lib/constants'
 import type { Item } from '@/types'
 import { isItemUrgent, isItemBlocked, isItemDone } from '@/lib/utils'
 import { isToday, addDays, parseISO, startOfDay } from 'date-fns'
@@ -52,16 +52,33 @@ function groupByPeriod(items: Item[]) {
   })).filter((g) => g.items.length > 0)
 }
 
+function groupByCategory(items: Item[]) {
+  const ordered = [...ECHEANCIER_CATEGORIES]
+  const extra = [...new Set(items.map((i) => i.category).filter(Boolean))].filter(
+    (c) => !ordered.includes(c as typeof ordered[number]),
+  ) as string[]
+  const allCats = [...ordered, ...extra]
+
+  return allCats
+    .map((cat) => ({
+      label: cat,
+      items: items.filter((i) => i.category === cat),
+    }))
+    .filter((g) => g.items.length > 0)
+}
+
 export function EcheancierPage() {
   return (
     <ModulePage
       module="echeancier"
       title="Échéancier"
-      subtitle="Toutes vos tâches par période"
+      subtitle="Toutes vos tâches — par période, calendrier ou pièce"
       quickFilters={quickFilters}
       filterFn={echeancierFilter}
       groupBy={groupByPeriod}
+      groupByCategory={groupByCategory}
       defaultStatus="a_faire"
+      showViewToggle
     />
   )
 }
