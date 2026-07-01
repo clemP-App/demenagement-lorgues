@@ -41,6 +41,15 @@ export function isItemBlocked(item: Item): boolean {
   return item.status === 'bloque' || item.status === 'probleme'
 }
 
+export function sortItemsPendingFirst(items: Item[]): Item[] {
+  return [...items].sort((a, b) => {
+    const aDone = isItemDone(a) ? 1 : 0
+    const bDone = isItemDone(b) ? 1 : 0
+    if (aDone !== bDone) return aDone - bDone
+    return 0
+  })
+}
+
 export function getModuleStats(items: Item[], module: ModuleType): ModuleStats {
   const filtered = items.filter((i) => i.module === module)
   const total = filtered.length

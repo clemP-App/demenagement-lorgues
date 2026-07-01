@@ -37,12 +37,12 @@ interface FilterChipsProps {
 
 export function FilterChips({ filters, active, onChange }: FilterChipsProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+    <div className="-mx-1 flex min-w-0 flex-wrap gap-2 px-1">
       {filters.map((f) => (
         <button
           key={f.key}
           onClick={() => onChange(f.value)}
-          className={`shrink-0 rounded-full px-3.5 py-2.5 text-xs font-medium transition-colors sm:py-1.5 ${
+          className={`max-w-full truncate rounded-full px-3.5 py-2.5 text-xs font-medium transition-colors sm:py-1.5 ${
             active === f.value
               ? 'bg-brand-600 text-white'
               : 'bg-slate-100 text-slate-600 hover:bg-slate-200'

@@ -6,7 +6,8 @@ import { ItemCard } from '@/components/ItemCard'
 import { ItemDetailModal } from '@/components/ItemDetailModal'
 import { SearchBar, FilterChips } from '@/components/SearchBar'
 import { ProgressBar } from '@/components/ProgressBar'
-import { filterItems, getModuleStats } from '@/lib/utils'
+import { filterItems, getModuleStats, sortItemsPendingFirst } from '@/lib/utils'
+import { PageShell } from '@/components/PageShell'
 import { MODULE_DONE_STATUS } from '@/lib/constants'
 
 interface ModulePageProps {
@@ -63,7 +64,9 @@ export function ModulePage({
 
   const stats = getModuleStats(items, module)
   const doneStatus = MODULE_DONE_STATUS[module]?.[0] ?? 'fait'
-  const groups = groupBy ? groupBy(moduleItems) : [{ label: '', items: moduleItems }]
+  const groups = groupBy
+    ? groupBy(moduleItems).map((g) => ({ ...g, items: sortItemsPendingFirst(g.items) }))
+    : [{ label: '', items: sortItemsPendingFirst(moduleItems) }]
 
   const handleQuickDone = async (item: Item) => {
     if (!online) return
@@ -71,12 +74,12 @@ export function ModulePage({
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-5 sm:px-6 sm:py-6 lg:max-w-6xl lg:px-8">
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-800">{title}</h1>
-          {subtitle && <p className="mt-1 text-sm text-slate-500">{subtitle}</p>}
-          <div className="mt-3 max-w-xs">
+    <PageShell size="lg">
+      <div className="mb-6 flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-xl font-bold text-slate-800 sm:text-2xl">{title}</h1>
+          {subtitle && <p className="mt-1 break-words text-sm text-slate-500">{subtitle}</p>}
+          <div className="mt-3 w-full max-w-xs">
             <ProgressBar percent={stats.percent} size="sm" />
             <p className="mt-1 text-xs text-slate-500">
               {stats.done}/{stats.total} terminés
@@ -97,11 +100,13 @@ export function ModulePage({
 
       {children}
 
-      <div className="mb-4 space-y-3">
+      <div className="mb-4 min-w-0 space-y-3">
         <SearchBar value={search} onChange={setSearch} />
         {quickFilters.length > 0 && (
-          <FilterChips filters={[{ key: 'all', label: 'Toutes', value: '' }, ...quickFilters]}
-            active={activeFilter} onChange={setActiveFilter} />
+          <div className="min-w-0">
+            <FilterChips filters={[{ key: 'all', label: 'Toutes', value: '' }, ...quickFilters]}
+              active={activeFilter} onChange={setActiveFilter} />
+          </div>
         )}
       </div>
 
@@ -112,15 +117,15 @@ export function ModulePage({
       ) : moduleItems.length === 0 ? (
         <p className="py-12 text-center text-slate-400">Aucun élément trouvé</p>
       ) : (
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           {groups.map((group) => (
-            <div key={group.label || 'all'}>
+            <div key={group.label || 'all'} className="min-w-0">
               {group.label && (
-                <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">
+                <h2 className="mb-3 break-words text-sm font-semibold uppercase tracking-wide text-slate-400">
                   {group.label} ({group.items.length})
                 </h2>
               )}
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                 {group.items.map((item) => (
                   <ItemCard
                     key={item.id}
@@ -148,7 +153,7 @@ export function ModulePage({
         item={selectedItem}
         onClose={() => setSelectedItem(null)}
       />
-    </div>
+    </PageShell>
   )
 }
 

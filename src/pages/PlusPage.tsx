@@ -14,9 +14,11 @@ const links = [
   { to: '/parametres', icon: Settings, label: 'Paramètres' },
 ]
 
+import { PageShell } from '@/components/PageShell'
+
 export function PlusPage() {
   return (
-    <div className="mx-auto max-w-lg px-4 py-6">
+    <PageShell size="sm">
       <h1 className="text-2xl font-bold text-slate-800">Plus</h1>
       <p className="mt-1 text-sm text-slate-500">Autres sections et outils</p>
       <div className="mt-6 grid gap-3">
@@ -33,6 +35,6 @@ export function PlusPage() {
           </Link>
         ))}
       </div>
-    </div>
+    </PageShell>
   )
 }

@@ -2,11 +2,13 @@ import { format, parseISO } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { useApp } from '@/context/AppContext'
 
+import { PageShell } from '@/components/PageShell'
+
 export function ActivityPage() {
   const { activity } = useApp()
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 lg:px-8">
+    <PageShell size="sm">
       <h1 className="text-2xl font-bold text-slate-800">Activité récente</h1>
       <p className="mt-1 text-sm text-slate-500">Historique des modifications</p>
 
@@ -32,6 +34,6 @@ export function ActivityPage() {
           </div>
         ))}
       </div>
-    </div>
+    </PageShell>
   )
 }

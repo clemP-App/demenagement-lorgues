@@ -7,6 +7,8 @@ import { updateSeedVersion, resetWorkspaceData } from '@/services/api'
 import { downloadFile, exportToCsv } from '@/lib/utils'
 import { clearWorkspaceCache } from '@/lib/cache'
 
+import { PageShell } from '@/components/PageShell'
+
 export function SettingsPage() {
   const {
     workspace, displayName, updateDisplayName, syncItems, items, online, bulkAddItems,
@@ -102,7 +104,7 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6 lg:px-8">
+    <PageShell size="sm">
       <h1 className="text-2xl font-bold text-slate-800">Paramètres</h1>
 
       {message && (
@@ -179,7 +181,7 @@ export function SettingsPage() {
           Évite de stocker des documents sensibles ou des informations confidentielles dans les notes.
         </p>
       </div>
-    </div>
+    </PageShell>
   )
 }
 

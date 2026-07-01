@@ -6,6 +6,7 @@ import { ProgressBar } from '@/components/ProgressBar'
 import { PriorityBadge } from '@/components/Badge'
 import { ItemDetailModal } from '@/components/ItemDetailModal'
 import { VOITURES } from '@/lib/constants'
+import { PageShell } from '@/components/PageShell'
 import { isItemDone } from '@/lib/utils'
 
 export function VoituresPage() {
@@ -27,8 +28,8 @@ export function VoituresPage() {
   ).length
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
-      <h1 className="text-2xl font-bold text-slate-800">À emporter en voiture</h1>
+    <PageShell size="lg">
+      <h1 className="text-xl font-bold text-slate-800 sm:text-2xl">À emporter en voiture</h1>
       <p className="mt-1 text-sm text-slate-500">Évitez que l'essentiel parte dans le camion</p>
 
       {indispensableMissing > 0 && (
@@ -46,13 +47,17 @@ export function VoituresPage() {
             </div>
             <ProgressBar percent={percent} size="sm" />
             <div className="mt-4 space-y-2">
-              {colItems.map((item) => (
+              {colItems.map((item) => {
+                const itemDone = isItemDone(item)
+                return (
                 <div
                   key={item.id}
-                  className={`flex items-center gap-3 rounded-xl border p-3 ${
-                    item.data.indispensable && item.status !== 'dans_voiture'
-                      ? 'border-red-200 bg-red-50/50'
-                      : 'border-slate-100'
+                  className={`flex min-w-0 items-center gap-3 rounded-xl border p-3 ${
+                    itemDone
+                      ? 'border-green-200 bg-green-50/70'
+                      : item.data.indispensable && item.status !== 'dans_voiture'
+                        ? 'border-red-200 bg-red-50/50'
+                        : 'border-slate-100 bg-white'
                   }`}
                 >
                   <button
@@ -66,21 +71,23 @@ export function VoituresPage() {
                   >
                     <Check className="h-4 w-4" />
                   </button>
-                  <button onClick={() => setSelected(item)} className="flex-1 text-left">
-                    <p className="font-medium text-slate-800">{item.title}</p>
+                  <button onClick={() => setSelected(item)} className="min-w-0 flex-1 text-left">
+                    <p className={`break-words font-medium ${itemDone ? 'text-slate-500 line-through' : 'text-slate-800'}`}>
+                      {item.title}
+                    </p>
                     <div className="mt-1 flex flex-wrap gap-1">
-                      <PriorityBadge priority={item.priority} small />
+                      {!itemDone && <PriorityBadge priority={item.priority} small />}
                       {item.category && <span className="text-xs text-slate-400">{item.category}</span>}
                     </div>
                   </button>
                 </div>
-              ))}
+              )})}
             </div>
           </div>
         ))}
       </div>
 
       <ItemDetailModal item={selected} onClose={() => setSelected(null)} />
-    </div>
+    </PageShell>
   )
 }

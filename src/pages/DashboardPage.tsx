@@ -14,6 +14,7 @@ import { daysUntilMove, getGlobalStats, getDoNowItems, getLastStretchItems,
 import { MODULE_PATHS } from '@/lib/constants'
 import type { ModuleType } from '@/types'
 import { useState } from 'react'
+import { PageShell } from '@/components/PageShell'
 
 const MODULE_CARDS: {
   module: ModuleType
@@ -46,7 +47,7 @@ export function DashboardPage() {
   ).length
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
+    <PageShell size="lg">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-800 lg:text-3xl">Déménagement Lorgues</h1>
@@ -97,7 +98,7 @@ export function DashboardPage() {
 
       {/* Module cards */}
       <h2 className="mb-4 text-lg font-semibold text-slate-700">Modules</h2>
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {MODULE_CARDS.map(({ module, icon: Icon, label, color }) => {
           const stats = getModuleStats(items, module)
           const hasAlert = stats.urgent > 0 || stats.blocked > 0
@@ -145,7 +146,7 @@ export function DashboardPage() {
           Bien joué, rien d'urgent pour le moment !
         </p>
       ) : (
-        <div className="mb-8 grid gap-3 sm:grid-cols-2">
+        <div className="mb-8 grid grid-cols-1 gap-3 lg:grid-cols-2">
           {doNow.map((item) => (
             <ItemCard
               key={item.id}
@@ -166,7 +167,7 @@ export function DashboardPage() {
       )}
 
       <ItemDetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />
-    </div>
+    </PageShell>
   )
 }
 

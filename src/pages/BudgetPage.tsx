@@ -5,6 +5,8 @@ import { ItemDetailModal } from '@/components/ItemDetailModal'
 import { StatusBadge } from '@/components/Badge'
 import { BUDGET_CATEGORIES } from '@/lib/constants'
 
+import { PageShell } from '@/components/PageShell'
+
 export function BudgetPage() {
   const { items } = useApp()
   const [selected, setSelected] = useState<Item | null>(null)
@@ -23,8 +25,8 @@ export function BudgetPage() {
   }, [budgetItems])
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-6 lg:px-8">
-      <h1 className="text-2xl font-bold text-slate-800">Dépenses / Budget</h1>
+    <PageShell size="md">
+      <h1 className="text-xl font-bold text-slate-800 sm:text-2xl">Dépenses / Budget</h1>
       <p className="mt-1 text-sm text-slate-500">Suivi des frais de déménagement</p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -71,7 +73,7 @@ export function BudgetPage() {
       </div>
 
       <ItemDetailModal item={selected} onClose={() => setSelected(null)} />
-    </div>
+    </PageShell>
   )
 }
 
