@@ -144,6 +144,27 @@ export function generateInviteCode(): string {
   return `LORGUES-${new Date().getFullYear()}`
 }
 
+/** Normalise le code : majuscules, tiret ASCII, sans espaces */
+export function normalizeInviteCode(code: string): string {
+  return code
+    .trim()
+    .toUpperCase()
+    .replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/g, '-')
+    .replace(/\s+/g, '')
+}
+
+export function formatSupabaseError(err: unknown): string {
+  if (err && typeof err === 'object' && 'message' in err) {
+    const msg = String((err as { message: string }).message)
+    if (msg.includes('invalid') || msg.includes('invalide')) {
+      return 'Code d\'invitation invalide — vérifiez le code exact dans Paramètres (ordinateur).'
+    }
+    return msg
+  }
+  if (err instanceof Error) return err.message
+  return 'Erreur de connexion'
+}
+
 export function generateCartonName(piece: string, existing: Item[]): string {
   const prefix = piece.toLowerCase().includes('cuisine')
     ? 'Carton cuisine'

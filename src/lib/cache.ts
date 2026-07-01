@@ -43,6 +43,10 @@ export function loadWorkspaceCache(): Workspace | null {
   return loadFromCache<Workspace>(cacheKeys.workspace)
 }
 
+export function clearWorkspaceMeta(): void {
+  localStorage.removeItem(cacheKeys.workspace)
+}
+
 export function saveItemsCache(wsId: string, items: Item[]): void {
   saveToCache(cacheKeys.items(wsId), items)
   saveToCache(cacheKeys.lastSync(wsId), new Date().toISOString())

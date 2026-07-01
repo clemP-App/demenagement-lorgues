@@ -10,12 +10,17 @@ import {
   getDisplayName,
   setDisplayName,
   loadWorkspaceCache,
+  clearWorkspaceMeta,
 } from '@/lib/cache'
 import type { Workspace } from '@/types'
 import { generateInviteCode } from '@/lib/utils'
 
+function useCachedWorkspaceOnly(): Workspace | null {
+  return loadWorkspaceCache()
+}
+
 export function useWorkspace() {
-  const [workspace, setWorkspace] = useState<Workspace | null>(loadWorkspaceCache())
+  const [workspace, setWorkspace] = useState<Workspace | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [authReady, setAuthReady] = useState(false)
@@ -32,9 +37,14 @@ export function useWorkspace() {
       await ensureAnonymousAuth()
       setAuthReady(true)
       const ws = await fetchWorkspace()
-      setWorkspace(ws)
+      if (ws) {
+        setWorkspace(ws)
+      } else {
+        clearWorkspaceMeta()
+        setWorkspace(null)
+      }
     } catch (e) {
-      const cached = loadWorkspaceCache()
+      const cached = useCachedWorkspaceOnly()
       if (cached) setWorkspace(cached)
       setError(e instanceof Error ? e.message : 'Erreur de connexion')
     } finally {

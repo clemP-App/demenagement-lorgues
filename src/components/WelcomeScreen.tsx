@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Home, Users, Loader2 } from 'lucide-react'
 import { useApp } from '@/context/AppContext'
-import { generateInviteCode } from '@/lib/utils'
+import { generateInviteCode, formatSupabaseError } from '@/lib/utils'
 
 export function WelcomeScreen() {
   const { createWorkspace, joinWorkspace, workspaceLoading, workspaceError } = useApp()
@@ -21,7 +21,7 @@ export function WelcomeScreen() {
     try {
       await createWorkspace(name, inviteCode, displayName.trim())
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur')
+      setError(formatSupabaseError(err))
     } finally {
       setLoading(false)
     }
@@ -38,7 +38,7 @@ export function WelcomeScreen() {
     try {
       await joinWorkspace(joinCode.trim(), displayName.trim())
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Code invalide')
+      setError(formatSupabaseError(err))
     } finally {
       setLoading(false)
     }
@@ -119,7 +119,9 @@ export function WelcomeScreen() {
                 <span className="mb-1 block text-sm font-medium text-slate-700">Code d'invitation</span>
                 <input value={inviteCode} onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
                   className="w-full rounded-xl border border-slate-200 px-4 py-3 font-mono text-sm uppercase" />
-                <p className="mt-1 text-xs text-slate-400">Partagez ce code avec votre conjoint(e)</p>
+                <p className="mt-1 text-xs text-slate-400">
+                  Partagez ce code exact avec votre conjoint(e) — utilisez le bouton Copier dans Paramètres
+                </p>
               </label>
               <button type="submit" disabled={loading}
                 className="w-full rounded-xl bg-brand-600 py-3.5 font-semibold text-white hover:bg-brand-700 disabled:opacity-50">

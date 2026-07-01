@@ -1,4 +1,5 @@
 import { supabase, ensureAnonymousAuth } from '@/lib/supabase'
+import { normalizeInviteCode } from '@/lib/utils'
 import type { Workspace, Item, ItemInput, Comment, ActivityLog } from '@/types'
 import {
   saveWorkspaceCache,
@@ -16,7 +17,7 @@ export async function fetchWorkspace(): Promise<Workspace | null> {
   const { data, error } = await supabase.rpc('get_my_workspace')
   if (error) throw error
   const row = data?.[0]
-  if (!row) return loadWorkspaceCache()
+  if (!row) return null
   const workspace: Workspace = row
   saveWorkspaceCache(workspace)
   return workspace
@@ -30,7 +31,7 @@ export async function createWorkspace(
   await ensureAnonymousAuth()
   const { data, error } = await supabase.rpc('create_workspace_with_member', {
     workspace_name: name,
-    invite_code: inviteCode,
+    invite_code: normalizeInviteCode(inviteCode),
     display_name: displayName,
   })
   if (error) throw error
@@ -43,7 +44,7 @@ export async function joinWorkspace(
 ): Promise<string> {
   await ensureAnonymousAuth()
   const { data, error } = await supabase.rpc('join_workspace_by_code', {
-    invite_code: inviteCode,
+    invite_code: normalizeInviteCode(inviteCode),
     display_name: displayName,
   })
   if (error) throw error
