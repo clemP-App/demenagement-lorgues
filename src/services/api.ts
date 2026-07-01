@@ -3,7 +3,6 @@ import { normalizeInviteCode } from '@/lib/utils'
 import type { Workspace, Item, ItemInput, Comment, ActivityLog } from '@/types'
 import {
   saveWorkspaceCache,
-  loadWorkspaceCache,
   saveItemsCache,
   loadItemsCache,
   saveCommentsCache,
