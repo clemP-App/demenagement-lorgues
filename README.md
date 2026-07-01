@@ -78,6 +78,47 @@ Ou placez manuellement `icon-192.png` et `icon-512.png` dans `public/icons/`.
 
 ## Déploiement
 
+### GitHub Pages (recommandé)
+
+L'app sera disponible sur : **https://clemP-App.github.io/demenagement-lorgues/**
+
+#### 1. Activer GitHub Pages
+
+Sur GitHub : **Settings → Pages → Build and deployment → Source : GitHub Actions**
+
+#### 2. Ajouter les secrets Supabase
+
+**Settings → Secrets and variables → Actions → New repository secret**
+
+| Secret | Valeur |
+|--------|--------|
+| `VITE_SUPABASE_URL` | URL de votre projet Supabase |
+| `VITE_SUPABASE_ANON_KEY` | Clé anon public Supabase |
+
+#### 3. Déployer
+
+À chaque push sur `main`, le workflow `.github/workflows/deploy.yml` build et déploie automatiquement.
+
+Vous pouvez aussi lancer manuellement : **Actions → Deploy GitHub Pages → Run workflow**
+
+#### 4. Supabase — URL autorisée (si besoin)
+
+Dans Supabase **Authentication → URL Configuration**, ajoutez :
+
+```
+https://clemP-App.github.io/demenagement-lorgues/**
+```
+
+#### Build local (test)
+
+```bash
+# PowerShell
+$env:GITHUB_PAGES="true"
+npm run build:pages
+cp dist/index.html dist/404.html   # Linux/Mac
+# Puis servir le dossier dist/ avec un serveur local
+```
+
 ### Vercel
 
 ```bash
@@ -98,16 +139,6 @@ npm run build
 - Ajoutez les variables d'environnement dans Netlify
 
 Le fichier `netlify.toml` est inclus.
-
-### GitHub Pages
-
-```bash
-GITHUB_PAGES=true npm run build
-```
-
-Publiez le contenu de `dist/` sur la branche `gh-pages`.
-
-> Adaptez `base` dans `vite.config.ts` si votre repo a un autre nom.
 
 ## Utilisation familiale
 

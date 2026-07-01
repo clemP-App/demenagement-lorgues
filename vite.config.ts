@@ -3,16 +3,19 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const isGitHubPages = process.env.GITHUB_PAGES === 'true'
+const base = isGitHubPages ? '/demenagement-lorgues/' : '/'
+
 export default defineConfig({
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
-  base: process.env.GITHUB_PAGES === 'true' ? '/demenagement-lorgues/' : '/',
+  base,
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'icons/*.png'],
+      includeAssets: ['favicon.svg', 'icons/*.svg'],
       manifest: {
         name: 'Déménagement Lorgues',
         short_name: 'Déménagement',
@@ -21,7 +24,8 @@ export default defineConfig({
         background_color: '#f8fafc',
         display: 'standalone',
         orientation: 'portrait-primary',
-        start_url: '/',
+        start_url: base,
+        scope: base,
         icons: [
           { src: '/icons/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
           { src: '/icons/icon.svg', sizes: '512x512', type: 'image/svg+xml', purpose: 'maskable' },
