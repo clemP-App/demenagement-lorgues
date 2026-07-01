@@ -53,7 +53,7 @@ export function ItemDetailModal({ item, onClose, onUpdated }: ItemDetailModalPro
         data: updates.data ?? form.data,
       })
       onUpdated?.()
-      if (updates.status) onClose()
+      onClose()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur')
     } finally {
