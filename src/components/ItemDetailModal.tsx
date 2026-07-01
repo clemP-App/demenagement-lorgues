@@ -179,7 +179,7 @@ export function ItemDetailModal({ item, onClose, onUpdated }: ItemDetailModalPro
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center sm:p-4">
-      <div className="flex max-h-[92vh] w-full max-w-lg flex-col rounded-t-2xl bg-white shadow-xl sm:rounded-2xl">
+      <div className="flex max-h-[92dvh] w-full max-w-lg flex-col rounded-t-2xl bg-white shadow-xl sm:max-h-[90dvh] sm:rounded-2xl safe-bottom">
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
           <div>
             <p className="text-xs text-slate-400">{MODULE_LABELS[item.module]}</p>
@@ -195,15 +195,15 @@ export function ItemDetailModal({ item, onClose, onUpdated }: ItemDetailModalPro
 
           <div className="flex flex-wrap gap-2">
             <button onClick={() => save({ status: doneStatus })} disabled={saving}
-              className="flex items-center gap-1.5 rounded-xl bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">
-              <Check className="h-4 w-4" /> Marquer comme fait
+              className="touch-target flex items-center justify-center gap-1.5 rounded-xl bg-green-600 px-4 py-3 text-sm font-medium text-white hover:bg-green-700 sm:py-2">
+              <Check className="h-4 w-4" /> <span className="hidden sm:inline">Marquer comme fait</span><span className="sm:hidden">Fait</span>
             </button>
             <button onClick={() => save({ status: 'en_cours' })} disabled={saving}
-              className="flex items-center gap-1.5 rounded-xl bg-blue-100 px-4 py-2 text-sm font-medium text-blue-700 hover:bg-blue-200">
+              className="touch-target flex items-center justify-center gap-1.5 rounded-xl bg-blue-100 px-4 py-3 text-sm font-medium text-blue-700 hover:bg-blue-200 sm:py-2">
               <Play className="h-4 w-4" /> En cours
             </button>
             <button onClick={() => save({ status: 'bloque' })} disabled={saving}
-              className="flex items-center gap-1.5 rounded-xl bg-red-100 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-200">
+              className="touch-target flex items-center justify-center gap-1.5 rounded-xl bg-red-100 px-4 py-3 text-sm font-medium text-red-700 hover:bg-red-200 sm:py-2">
               <Ban className="h-4 w-4" /> Bloqué
             </button>
           </div>

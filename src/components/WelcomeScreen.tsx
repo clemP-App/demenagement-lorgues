@@ -108,23 +108,23 @@ export function WelcomeScreen() {
                 <span className="mb-1 block text-sm font-medium text-slate-700">Votre prénom</span>
                 <input value={displayName} onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Ex : Clément"
-                  className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm" required />
+                  className="w-full rounded-xl border border-slate-200 px-4 py-3.5 text-base sm:py-3 sm:text-sm" required />
               </label>
               <label className="block">
                 <span className="mb-1 block text-sm font-medium text-slate-700">Nom de l'espace</span>
                 <input value={name} onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm" />
+                  className="w-full rounded-xl border border-slate-200 px-4 py-3.5 text-base sm:py-3 sm:text-sm" />
               </label>
               <label className="block">
                 <span className="mb-1 block text-sm font-medium text-slate-700">Code d'invitation</span>
                 <input value={inviteCode} onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-                  className="w-full rounded-xl border border-slate-200 px-4 py-3 font-mono text-sm uppercase" />
+                  className="w-full rounded-xl border border-slate-200 px-4 py-3.5 font-mono text-base uppercase sm:py-3 sm:text-sm" />
                 <p className="mt-1 text-xs text-slate-400">
                   Partagez ce code exact avec votre conjoint(e) — utilisez le bouton Copier dans Paramètres
                 </p>
               </label>
               <button type="submit" disabled={loading}
-                className="w-full rounded-xl bg-brand-600 py-3.5 font-semibold text-white hover:bg-brand-700 disabled:opacity-50">
+                className="touch-target w-full rounded-xl bg-brand-600 py-4 text-base font-semibold text-white hover:bg-brand-700 disabled:opacity-50 sm:py-3.5 sm:text-sm">
                 {loading ? 'Création…' : 'Créer l\'espace'}
               </button>
             </form>
@@ -139,7 +139,7 @@ export function WelcomeScreen() {
                 <span className="mb-1 block text-sm font-medium text-slate-700">Votre prénom</span>
                 <input value={displayName} onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Ex : Julie"
-                  className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm" required />
+                  className="w-full rounded-xl border border-slate-200 px-4 py-3.5 text-base sm:py-3 sm:text-sm" required />
               </label>
               <label className="block">
                 <span className="mb-1 block text-sm font-medium text-slate-700">Code d'invitation</span>
@@ -148,7 +148,7 @@ export function WelcomeScreen() {
                   className="w-full rounded-xl border border-slate-200 px-4 py-3 font-mono text-sm uppercase" required />
               </label>
               <button type="submit" disabled={loading}
-                className="w-full rounded-xl bg-brand-600 py-3.5 font-semibold text-white hover:bg-brand-700 disabled:opacity-50">
+                className="touch-target w-full rounded-xl bg-brand-600 py-4 text-base font-semibold text-white hover:bg-brand-700 disabled:opacity-50 sm:py-3.5 sm:text-sm">
                 {loading ? 'Connexion…' : 'Rejoindre l\'espace'}
               </button>
             </form>

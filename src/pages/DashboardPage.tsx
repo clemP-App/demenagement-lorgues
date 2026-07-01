@@ -46,7 +46,7 @@ export function DashboardPage() {
   ).length
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 lg:px-8">
+    <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-800 lg:text-3xl">Déménagement Lorgues</h1>

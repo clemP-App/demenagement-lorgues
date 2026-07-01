@@ -56,7 +56,7 @@ export function ItemCard({ item, onClick, onQuickDone, onQuickComment, showModul
         {onQuickDone && (
           <button
             onClick={(e) => { e.stopPropagation(); onQuickDone() }}
-            className="flex items-center gap-1 rounded-lg bg-green-50 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-100"
+            className="flex items-center gap-1 rounded-lg bg-green-50 px-3 py-2.5 text-xs font-medium text-green-700 hover:bg-green-100 sm:py-1.5"
           >
             <Check className="h-3.5 w-3.5" />
             Valider
@@ -65,7 +65,7 @@ export function ItemCard({ item, onClick, onQuickDone, onQuickComment, showModul
         {onQuickComment && (
           <button
             onClick={(e) => { e.stopPropagation(); onQuickComment() }}
-            className="flex items-center gap-1 rounded-lg bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100"
+            className="flex items-center gap-1 rounded-lg bg-slate-50 px-3 py-2.5 text-xs font-medium text-slate-600 hover:bg-slate-100 sm:py-1.5"
           >
             <MessageSquare className="h-3.5 w-3.5" />
             Commenter

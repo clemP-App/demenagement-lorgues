@@ -27,7 +27,7 @@ export function VoituresPage() {
   ).length
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 lg:px-8">
+    <div className="mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
       <h1 className="text-2xl font-bold text-slate-800">À emporter en voiture</h1>
       <p className="mt-1 text-sm text-slate-500">Évitez que l'essentiel parte dans le camion</p>
 

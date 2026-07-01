@@ -7,9 +7,50 @@
 @layer base {
   html {
     -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
+
   body {
     @apply font-sans text-slate-800 antialiased;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    touch-action: manipulation;
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Évite le zoom automatique sur iOS quand on focus un champ */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  @media (min-width: 1024px) {
+    input,
+    select,
+    textarea {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+@layer components {
+  .touch-target {
+    @apply min-h-11 min-w-11;
+  }
+
+  .page-shell {
+    @apply mx-auto w-full max-w-5xl px-4 py-5 sm:px-6 sm:py-6 lg:max-w-6xl lg:px-8;
+  }
+
+  .mobile-bottom-space {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
@@ -20,5 +61,9 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  .pb-nav-safe {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom));
   }
 }

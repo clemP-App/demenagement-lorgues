@@ -71,7 +71,7 @@ export function ModulePage({
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-6 lg:px-8">
+    <div className="mx-auto max-w-5xl px-4 py-5 sm:px-6 sm:py-6 lg:max-w-6xl lg:px-8">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-800">{title}</h1>
@@ -88,7 +88,7 @@ export function ModulePage({
         <button
           onClick={onAdd ?? (() => setShowAdd(true))}
           disabled={!online}
-          className="flex shrink-0 items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 disabled:opacity-50"
+          className="flex shrink-0 touch-target items-center gap-2 rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 disabled:opacity-50 sm:py-2.5"
         >
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">Ajouter</span>

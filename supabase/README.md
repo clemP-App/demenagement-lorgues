@@ -18,7 +18,10 @@ Exécuter dans l'ordre :
 
 **Database** → **Replication** → activer pour `items`, `comments`, `activity_log`
 
-## Variables d'environnement
+### Correctif invite_code ambiguë
+
+Si vous voyez `column reference "invite_code" is ambiguous`, exécutez `supabase/fix-invite-code.sql` dans l'éditeur SQL.
+
 
 ```env
 VITE_SUPABASE_URL=https://xxxx.supabase.co

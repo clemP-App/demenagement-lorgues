@@ -78,24 +78,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main content */}
-      <div className="flex flex-1 flex-col pb-20 lg:pb-0">
+      <div className="flex min-w-0 flex-1 flex-col pb-nav-safe lg:pb-0">
         <OfflineBanner online={online} />
-        <main className="flex-1">{children}</main>
-        <InstallPrompt />
+        <main className="flex-1 overflow-x-hidden">{children}</main>
+        <div className="safe-bottom lg:hidden">
+          <InstallPrompt />
+        </div>
       </div>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 flex border-t border-slate-200 bg-white lg:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 flex border-t border-slate-200 bg-white/95 backdrop-blur-md lg:hidden safe-bottom">
         {mobileNav.map(({ to, icon: Icon, label }) => (
           <Link
             key={to}
             to={to}
-            className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-xs ${
+            className={`touch-target flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-xs active:scale-95 transition-transform ${
               location.pathname === to ? 'text-brand-600' : 'text-slate-400'
             }`}
           >
-            <Icon className="h-6 w-6" />
-            <span className="font-medium">{label}</span>
+            <Icon className="h-6 w-6 shrink-0" />
+            <span className="font-medium leading-none">{label}</span>
           </Link>
         ))}
       </nav>

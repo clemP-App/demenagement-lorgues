@@ -15,7 +15,7 @@ export function SearchBar({ value, onChange, placeholder = 'Rechercher…' }: Se
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-sm outline-none ring-brand-500 focus:border-brand-400 focus:ring-2"
+        className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-10 text-base outline-none ring-brand-500 focus:border-brand-400 focus:ring-2 sm:py-2.5 sm:text-sm"
       />
       {value && (
         <button
@@ -42,7 +42,7 @@ export function FilterChips({ filters, active, onChange }: FilterChipsProps) {
         <button
           key={f.key}
           onClick={() => onChange(f.value)}
-          className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+          className={`shrink-0 rounded-full px-3.5 py-2.5 text-xs font-medium transition-colors sm:py-1.5 ${
             active === f.value
               ? 'bg-brand-600 text-white'
               : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
