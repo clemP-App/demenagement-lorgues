@@ -6,7 +6,7 @@ import { ItemDetailModal } from '@/components/ItemDetailModal'
 import { FilterChips } from '@/components/SearchBar'
 import { filterItems } from '@/lib/utils'
 import { MODULE_LABELS } from '@/lib/constants'
-import type { ModuleType, Item } from '@/types'
+import type { Item } from '@/types'
 
 const moduleFilters = Object.entries(MODULE_LABELS).map(([value, label]) => ({
   key: value, label, value,

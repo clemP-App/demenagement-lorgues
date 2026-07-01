@@ -10,7 +10,6 @@ import {
   getDisplayName,
   setDisplayName,
   loadWorkspaceCache,
-  saveWorkspaceCache,
 } from '@/lib/cache'
 import type { Workspace } from '@/types'
 import { generateInviteCode } from '@/lib/utils'

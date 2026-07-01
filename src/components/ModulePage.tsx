@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Plus, Loader2 } from 'lucide-react'
-import type { Item, ModuleType, ItemInput } from '@/types'
+import type { Item, ModuleType } from '@/types'
 import { useApp } from '@/context/AppContext'
 import { ItemCard } from '@/components/ItemCard'
 import { ItemDetailModal } from '@/components/ItemDetailModal'

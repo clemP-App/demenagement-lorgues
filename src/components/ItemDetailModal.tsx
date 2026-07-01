@@ -4,7 +4,6 @@ import { format, parseISO } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import type { Item, ModuleType } from '@/types'
 import { useApp } from '@/context/AppContext'
-import { StatusBadge, PriorityBadge } from '@/components/Badge'
 import {
   getDefaultStatuses,
   getDefaultPriorities,

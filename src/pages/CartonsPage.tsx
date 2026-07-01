@@ -32,8 +32,8 @@ function groupByPiece(items: Item[]) {
 export function CartonsPage() {
   const { items, addItem, online } = useApp()
   const [showQuick, setShowQuick] = useState(false)
-  const [piece, setPiece] = useState(PIECES_ACTUELLES[0])
-  const [arrivee, setArrivee] = useState(PIECES_ARRIVEE[0])
+  const [piece, setPiece] = useState<string>(PIECES_ACTUELLES[0])
+  const [arrivee, setArrivee] = useState<string>(PIECES_ARRIVEE[0])
   const [priority, setPriority] = useState('p2')
   const [transport, setTransport] = useState('Camion')
 

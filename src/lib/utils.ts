@@ -1,4 +1,4 @@
-import { differenceInDays, isBefore, isAfter, parseISO, startOfDay, isToday, isWithinInterval } from 'date-fns'
+import { differenceInDays, isBefore, parseISO, startOfDay, isToday } from 'date-fns'
 import type { Item, ModuleType, ModuleStats } from '@/types'
 import { MOVE_DATE, LAST_STRETCH_DATE } from '@/types'
 import {
@@ -163,7 +163,7 @@ export function exportToCsv(items: Item[], columns: string[]): string {
       .map((col) => {
         const val =
           col in item
-            ? (item as Record<string, unknown>)[col]
+            ? (item as unknown as Record<string, unknown>)[col]
             : item.data[col as keyof typeof item.data]
         const str = val == null ? '' : String(val)
         return `"${str.replace(/"/g, '""')}"`
